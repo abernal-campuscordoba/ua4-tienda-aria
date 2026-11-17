@@ -89,34 +89,3 @@ try {
 } 
 console.log(cafe.envio?.coste); 
 console.log(cafe.proveedor?.contacto?.telefono);
-
-const inventario = { 
-  C01: { nombre: "Café", precio: 3.5, stock: 20 }, 
-  T01: { nombre: "Tostada", precio: 2.2, stock: 15 }, 
-  Z01: { nombre: "Zumo de naranja", precio: 2.5, stock: 10 }, 
-}; 
-inventario.B01 = { nombre: "Bocadillo", precio: 4.5, stock: 8 }; 
-  
-let valorTotal = 0; 
-for (const codigo in inventario) { 
-  const prod = inventario[codigo]; 
-  console.log(codigo + ": " + prod.nombre + " (" + prod.stock + " uds)"); 
-  valorTotal += prod.precio * prod.stock; 
-} 
-console.log("Valor del inventario: " + valorTotal.toFixed(2) + " €"); 
-console.log("T01" in inventario, "X99" in inventario); 
-
-// ===== PARTE 2 · Referencias y copia ===== 
-let mensaje = "Hola"; 
-let copiaMensaje = mensaje; 
-copiaMensaje = "Adiós"; 
-console.log(mensaje, copiaMensaje); 
-  
-const original = { nombre: "Croissant", precio: 1.8 }; 
-const alias = original; 
-alias.precio = 2.5; 
-console.log(original.precio); 
-console.log(original === alias); 
-  
-const gemelo = { nombre: "Croissant", precio: 2.5 }; 
-console.log(original === gemelo);
