@@ -187,3 +187,45 @@ const tienda = {
 console.log(tienda.estado()); 
 tienda.abrir(); 
 console.log(tienda.estado());
+
+
+function presentar() { 
+  console.log("Soy " + this.nombre); 
+} 
+  
+const sucursal1 = { nombre: "Aria Centro", presentar }; 
+const sucursal2 = { nombre: "Aria Playa", presentar }; 
+  
+sucursal1.presentar(); 
+sucursal2.presentar(); 
+sucursal2["presentar"](); 
+
+
+let local = { 
+  nombre: "Aria Norte", 
+  saludarMal() { 
+    console.log("Hola desde " + local.nombre); 
+  }, 
+  saludarBien() { 
+    console.log("Hola desde " + this.nombre); 
+  }, 
+}; 
+  
+let otro = local; 
+local = null; 
+  
+try { 
+  otro.saludarMal(); 
+} catch (e) { 
+  console.log("Error: " + e.name); 
+} 
+otro.saludarBien(); 
+
+const extraida = sucursal1.presentar; 
+extraida(); 
+  
+const fijada = presentar.bind(sucursal1); 
+fijada(); 
+  
+const prestada = sucursal1.presentar.bind(sucursal2); 
+prestada();
