@@ -229,3 +229,173 @@ fijada();
   
 const prestada = sucursal1.presentar.bind(sucursal2); 
 prestada();
+
+const cafeteria = { 
+  nombre: "Aria", 
+  conNormal() { 
+    const flecha = () => console.log("dentro: " + this.nombre); 
+    flecha(); 
+  }, 
+  conFlecha: () => console.log("método flecha: " + this.nombre), 
+}; 
+  
+cafeteria.conNormal(); 
+cafeteria.conFlecha();
+
+const contador = { 
+  valor: 0, 
+  sumar(n) { 
+    this.valor += n; 
+    return this; 
+  }, 
+  restar(n) { 
+    this.valor -= n; 
+    return this; 
+  }, 
+  mostrar() { 
+    console.log("Valor: " + this.valor); 
+    return this; 
+  }, 
+}; 
+  
+contador.sumar(10).restar(3).mostrar().sumar(5).mostrar();
+
+// ===== PARTE 4 · Constructores y new ===== 
+function Articulo(nombre, precio) { 
+  this.nombre = nombre; 
+  this.precio = precio; 
+  this.stock = 0; 
+  this.describir = function () { 
+    return this.nombre + " · " + this.precio.toFixed(2) + " €"; 
+  }; 
+} 
+  
+const a1 = new Articulo("Café", 3.5); 
+const a2 = new Articulo("Tostada", 2.2); 
+console.log(a1.describir()); 
+console.log(a2.describir()); 
+console.log(a1 === a2); 
+console.log(a1 instanceof Articulo);
+
+const mal = Articulo("Zumo", 2.5); 
+console.log(mal); 
+console.log(typeof nombre);
+
+function Bebida(nombre, precio) { 
+  this.nombre = nombre; 
+  this.precio = precio; 
+} 
+  
+Bebida.prototype.describir = function () { 
+  return this.nombre + " · " + this.precio.toFixed(2) + " €"; 
+}; 
+  
+const b1 = new Bebida("Cappuccino", 2.8); 
+const b2 = new Bebida("Té", 2.2); 
+console.log(b1.describir(), "|", b2.describir()); 
+console.log(b1.describir === b2.describir); 
+console.log(a1.describir === a2.describir); 
+console.log(Object.hasOwn(b1, "describir"), "describir" in b1); 
+console.log(Object.getPrototypeOf(b1) === Bebida.prototype);
+
+
+// ===== PARTE 5 · La clase Object y claves ocultas ===== 
+const ficha = { nombre: "Café", precio: 3.5, stock: 20 }; 
+  
+console.log(Object.keys(ficha)); 
+console.log(Object.values(ficha)); 
+console.log(Object.entries(ficha)); 
+console.log(Object.hasOwn(ficha, "precio")); 
+console.log(Object.hasOwn(ficha, "pais")); 
+  
+for (const par of Object.entries(ficha)) { 
+  console.log(par[0] + " = " + par[1]); 
+}
+
+const config = { iva: 0.21, moneda: "EUR" }; 
+Object.freeze(config); 
+config.iva = 0.5; 
+config.pais = "España"; 
+delete config.moneda; 
+console.log(config);
+
+const cuenta = { titular: "Ana" }; 
+Object.defineProperty(cuenta, "iban", { 
+  value: "ES00-1234", 
+  writable: false, 
+  enumerable: true, 
+}); 
+  
+cuenta.iban = "otro"; 
+console.log(cuenta.iban); 
+console.log(Object.getOwnPropertyDescriptor(cuenta, "iban")); 
+console.log(Object.getOwnPropertyDescriptor(cuenta, "titular")); 
+console.log(Object.isFrozen(config), Object.isFrozen(cuenta));
+
+const usuario = { nombre: "Lucía" }; 
+Object.defineProperty(usuario, "claveInterna", { 
+  value: "123abc", 
+  enumerable: false, 
+}); 
+  
+for (const prop in usuario) { 
+  console.log(prop); 
+} 
+console.log(usuario.claveInterna); 
+console.log(Object.keys(usuario));
+
+const id = Symbol("id"); 
+const persona = { nombre: "Luis", [id]: 12345 }; 
+console.log(persona[id]); 
+console.log(Object.keys(persona)); 
+console.log(Symbol("clave") === Symbol("clave")); 
+
+const precios = { cafe: 3.5, te: 2.8, zumo: 2.5 }; 
+  
+const conIva = Object.fromEntries( 
+  Object.entries(precios).map(par => [par[0], +(par[1] * 1.1).toFixed(2)]) 
+); 
+  
+console.log(precios); 
+console.log(conIva);
+
+// ===== PARTE 6 · De objeto a valor primitivo ===== 
+const teclado = { 
+  nombre: "Teclado", 
+  precio: 30, 
+  toString() { 
+    return this.nombre; 
+  }, 
+  valueOf() { 
+    return this.precio; 
+  }, 
+}; 
+  
+console.log(String(teclado)); 
+console.log(Number(teclado)); 
+console.log(teclado + 10); 
+console.log(teclado > 20); 
+console.log(teclado == 30); 
+console.log("" + teclado); 
+console.log(`${teclado}`);
+
+const raton = { 
+  nombre: "Ratón", 
+  toString() { 
+    return this.nombre; 
+  }, 
+}; 
+  
+console.log(raton + 10); 
+console.log(raton + "!");
+
+const gadgets = [ 
+  { nombre: "Cable", precio: 8, valueOf() { return this.precio; } }, 
+  { nombre: "Ratón", precio: 15, valueOf() { return this.precio; } }, 
+  { nombre: "Alfombrilla", precio: 5, valueOf() { return this.precio; } }, 
+]; 
+  
+gadgets.sort((a, b) => a - b); 
+console.log(gadgets.map(g => g.nombre)); 
+console.log(Math.max(...gadgets)); 
+console.log(gadgets[0] < gadgets[1]);
