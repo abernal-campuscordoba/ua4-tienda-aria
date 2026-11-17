@@ -399,3 +399,6 @@ gadgets.sort((a, b) => a - b);
 console.log(gadgets.map(g => g.nombre)); 
 console.log(Math.max(...gadgets)); 
 console.log(gadgets[0] < gadgets[1]);
+
+
+console.log("PARTE 7");
