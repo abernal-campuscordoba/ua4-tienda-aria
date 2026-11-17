@@ -261,42 +261,63 @@ const contador = {
 contador.sumar(10).restar(3).mostrar().sumar(5).mostrar();
 
 // ===== PARTE 4 · Constructores y new ===== 
-function Articulo(nombre, precio) { 
-  this.nombre = nombre; 
-  this.precio = precio; 
-  this.stock = 0; 
-  this.describir = function () { 
+// ===== PARTE 7 · Clases ===== 
+class Producto { 
+  #stock; 
+  
+  constructor(codigo, nombre, precio, stock) { 
+    this.codigo = codigo; 
+    this.nombre = nombre; 
+    this.precio = precio; 
+    this.#stock = stock; 
+  } 
+  
+  get stock() { 
+    return this.#stock; 
+  } 
+  
+  set stock(valor) { 
+    if (Number.isInteger(valor) && valor >= 0) { 
+      this.#stock = valor; 
+    } else { 
+      console.log("Stock no válido: " + valor); 
+    } 
+  } 
+  
+  describir() { 
     return this.nombre + " · " + this.precio.toFixed(2) + " €"; 
-  }; 
+  } 
+  
+  toString() { 
+    return this.nombre; 
+  } 
+  
+  valueOf() { 
+    return this.precio; 
+  } 
+  
+  // método estático: pertenece a la clase, no a cada producto 
+  static porPrecio(a, b) { 
+    return a.precio - b.precio; 
+  } 
 } 
   
-const a1 = new Articulo("Café", 3.5); 
-const a2 = new Articulo("Tostada", 2.2); 
-console.log(a1.describir()); 
-console.log(a2.describir()); 
-console.log(a1 === a2); 
-console.log(a1 instanceof Articulo);
+const pCafe = new Producto("C01", "Café", 3.5, 20); 
+const pTostada = new Producto("T01", "Tostada", 2.2, 15); 
+const pZumo = new Producto("Z01", "Zumo de naranja", 2.5, 10);
 
-const mal = Articulo("Zumo", 2.5); 
-console.log(mal); 
-console.log(typeof nombre);
 
-function Bebida(nombre, precio) { 
-  this.nombre = nombre; 
-  this.precio = precio; 
-} 
-  
-Bebida.prototype.describir = function () { 
-  return this.nombre + " · " + this.precio.toFixed(2) + " €"; 
-}; 
-  
-const b1 = new Bebida("Cappuccino", 2.8); 
-const b2 = new Bebida("Té", 2.2); 
-console.log(b1.describir(), "|", b2.describir()); 
-console.log(b1.describir === b2.describir); 
-console.log(a1.describir === a2.describir); 
-console.log(Object.hasOwn(b1, "describir"), "describir" in b1); 
-console.log(Object.getPrototypeOf(b1) === Bebida.prototype);
+console.log(pCafe.describir()); 
+console.log(pCafe.stock); 
+pCafe.stock = 18; 
+console.log(pCafe.stock); 
+pCafe.stock = -5; 
+pCafe.stock = "mucho"; 
+console.log(pCafe.stock); 
+console.log(`${pTostada}`, pCafe + pTostada); 
+console.log(typeof Producto); 
+console.log(Object.getPrototypeOf(pCafe) === Producto.prototype); 
+console.log(Object.keys(pCafe)); 
 
 
 // ===== PARTE 5 · La clase Object y claves ocultas ===== 
@@ -402,3 +423,159 @@ console.log(gadgets[0] < gadgets[1]);
 
 
 console.log("PARTE 7");
+
+console.log(pCafe.describir()); 
+console.log(pCafe.stock); 
+pCafe.stock = 18; 
+console.log(pCafe.stock); 
+pCafe.stock = -5; 
+pCafe.stock = "mucho"; 
+console.log(pCafe.stock); 
+console.log(`${pTostada}`, pCafe + pTostada); 
+console.log(typeof Producto); 
+console.log(Object.getPrototypeOf(pCafe) === Producto.prototype); 
+console.log(Object.keys(pCafe)); 
+
+class ProductoPerecedero extends Producto { 
+  constructor(codigo, nombre, precio, stock, caducidad) { 
+    super(codigo, nombre, precio, stock); 
+    this.caducidad = caducidad; 
+  } 
+  
+  describir() { 
+    return super.describir() + " (caduca " + this.caducidad + ")"; 
+  } 
+} 
+  
+const pBocata = new ProductoPerecedero( 
+  "B01", "Bocadillo", 4.5, 8, "2026-12-01" 
+); 
+console.log(pBocata.describir()); 
+console.log(pBocata.stock); 
+console.log(pBocata instanceof Producto, pBocata instanceof ProductoPerecedero); 
+console.log(pBocata + 1); 
+  
+const catalogo = [pCafe, pTostada, pZumo, pBocata]; 
+catalogo.sort(Producto.porPrecio); 
+console.log(catalogo.map(p => p.nombre)); 
+
+class Carrito { 
+  constructor() { 
+    this.lineas = {}; 
+  } 
+  
+  agregar(producto, cantidad = 1) { 
+    if (producto.codigo in this.lineas) { 
+      this.lineas[producto.codigo].cantidad += cantidad; 
+    } else { 
+      this.lineas[producto.codigo] = { producto, cantidad }; 
+    } 
+  } 
+  
+  quitar(codigo) { 
+    delete this.lineas[codigo]; 
+  } 
+  
+  total() { 
+    let suma = 0; 
+    for (const codigo in this.lineas) { 
+      const linea = this.lineas[codigo]; 
+      suma += linea.producto.precio * linea.cantidad; 
+    } 
+    return suma; 
+  } 
+  
+  resumen() { 
+    for (const codigo in this.lineas) { 
+      const linea = this.lineas[codigo]; 
+      const importe = linea.producto.precio * linea.cantidad; 
+      console.log( 
+        linea.cantidad + " x " + linea.producto.nombre + 
+        " = " + importe.toFixed(2) + " €" 
+      ); 
+    } 
+    console.log("TOTAL: " + this.total().toFixed(2) + " €"); 
+  } 
+   agregar(producto, cantidad = 1) { 
+    const yaHay = producto.codigo in this.lineas 
+      ? this.lineas[producto.codigo].cantidad 
+      : 0; 
+  
+    if (yaHay + cantidad > producto.stock) { 
+      console.log("Sin stock suficiente de " + producto.nombre); 
+      return false; 
+    } 
+  
+    if (yaHay > 0) { 
+      this.lineas[producto.codigo].cantidad += cantidad; 
+    } else { 
+      this.lineas[producto.codigo] = { producto, cantidad }; 
+    } 
+    return true; 
+  }
+    cantidadTotal() { 
+    let unidades = 0; 
+    for (const codigo in this.lineas) { 
+      unidades += this.lineas[codigo].cantidad; 
+    } 
+    return unidades; 
+  } 
+  
+  vaciar() { 
+    this.lineas = {}; 
+  } 
+}
+
+const carrito = new Carrito(); 
+carrito.agregar(pCafe, 2); 
+carrito.agregar(pTostada); 
+carrito.agregar(pCafe); 
+carrito.resumen(); 
+  
+carrito.quitar("T01"); 
+carrito.agregar(pZumo, 2); 
+carrito.resumen(); 
+console.log(Object.keys(carrito.lineas)); 
+
+const prueba = new Carrito(); 
+console.log(prueba.agregar(pZumo, 8)); 
+console.log(prueba.agregar(pZumo, 5)); 
+console.log(prueba.cantidadTotal()); 
+  
+prueba.agregar(pTostada, 2); 
+console.log(prueba.cantidadTotal()); 
+  
+prueba.vaciar(); 
+console.log(Object.keys(prueba.lineas).length); 
+
+// ===== AUTOTEST FINAL ===== 
+function comprobar(descripcion, condicion) { 
+  console.log((condicion ? "✔ " : "✖ ") + descripcion); 
+} 
+  
+const carritoTest = new Carrito(); 
+carritoTest.agregar(pCafe, 2); 
+carritoTest.agregar(pCafe, 1); 
+comprobar("agregar suma las unidades del mismo producto", 
+  carritoTest.lineas["C01"].cantidad === 3); 
+comprobar("el total es 10.5", carritoTest.total() === 10.5); 
+comprobar("no se supera el stock", carritoTest.agregar(pZumo, 11) === false); 
+carritoTest.quitar("C01"); 
+comprobar("quitar elimina la línea", !("C01" in carritoTest.lineas)); 
+carritoTest.agregar(pTostada, 2); 
+carritoTest.agregar(pZumo, 1); 
+comprobar("cantidadTotal cuenta 3 unidades", carritoTest.cantidadTotal() === 3); 
+carritoTest.vaciar(); 
+comprobar("vaciar deja 0 líneas", Object.keys(carritoTest.lineas).length === 0); 
+  
+comprobar("original y alias son el mismo objeto", original === alias); 
+comprobar("original y gemelo NO son el mismo objeto", original !== gemelo); 
+comprobar("la copia profunda no comparte la dirección", 
+  profunda.direccion !== pedido.direccion); 
+comprobar("config está congelada", Object.isFrozen(config)); 
+comprobar("pCafe se creó con Producto", pCafe instanceof Producto); 
+comprobar("los productos comparten describir", pCafe.describir === pTostada.describir); 
+comprobar("teclado + 10 usa valueOf", teclado + 10 === 40); 
+comprobar("el stock de Producto es privado", 
+  !Object.keys(pCafe).includes("stock")); 
+comprobar("pBocata hereda de Producto", pBocata instanceof Producto); 
