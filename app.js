@@ -1,4 +1,4 @@
-// Alumno/a: TU NOMBRE Y APELLIDOS 
+// Alumno/a: Antonio Jesús Bernal Alonso 
 // Grupo: 2.º DAW · UA4 Objetos 
 console.log("app.js cargado");
 
